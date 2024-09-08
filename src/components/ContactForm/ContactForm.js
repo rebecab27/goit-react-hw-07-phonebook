@@ -1,37 +1,42 @@
-//Commented code in this file is the previous version of checking if the contact that we are adding is already in contacts
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { addContact } from 'redux/operations';
 import css from './ContactForm.module.css';
-// import { selectContacts } from './../../redux/selectors';
+// Importă Notiflix dacă dorești să folosești notificări
 // import Notiflix from 'notiflix';
 
 const ContactForm = () => {
   const dispatch = useDispatch();
-  // const contacts = useSelector(selectContacts);
 
   const handleSubmit = e => {
     e.preventDefault();
     const form = e.target;
-    // const names = contacts.map(contact => contact.name.toLowerCase());
-    // const newContactName = form.elements.name.value.trim().toLowerCase();
 
-    // if (names.find(name => name === newContactName)) {
+    // Obține datele din formular
+    const name = form.elements.name.value.trim();
+    const phone = form.elements.number.value;
+
+    // Verifică dacă contactul există deja în redux store
+    // const contacts = useSelector(selectContacts);
+    // const names = contacts.map(contact => contact.name.toLowerCase());
+    // if (names.includes(name.toLowerCase())) {
     //   form.reset();
-    //   return Notiflix.Notify.failure(
-    //     `Contact with name '${newContactName}' is already in contacts.`
+    //   Notiflix.Notify.failure(
+    //     `Contact with name '${name}' is already in contacts.`
     //   );
+    //   return;
     // }
 
     dispatch(
       addContact({
-        name: form.elements.name.value,
-        phone: form.elements.number.value,
+        name,
+        phone,
       })
     );
+
     form.reset();
     // Notiflix.Notify.success(
-    //   `Contact with name '${newContactName}' has been added succesfully to contacts list.`
+    //   `Contact with name '${name}' has been added successfully to contacts list.`
     // );
   };
 
