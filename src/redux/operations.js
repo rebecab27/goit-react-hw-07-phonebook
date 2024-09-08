@@ -1,53 +1,70 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import Notiflix from 'notiflix';
 
-// Встановлення базового URL для axios
-axios.defaults.baseURL = 'https://649496f90da866a9536803ee.mockapi.io';
+axios.defaults.baseURL = 'https://644a708a79279846dce8a780.mockapi.io/contacts';
 
-// Створення асинхронної Thunk-дії fetchContacts
 export const fetchContacts = createAsyncThunk(
-  'contacts/fetchAll', // Унікальний рядок, що ідентифікує цю дію
+  'contacts/fetchAll',
   async (_, thunkAPI) => {
     try {
-      // Надсилання GET-запиту на '/contacts'
       const response = await axios.get('/contacts');
-      // Повернення отриманих даних
       return response.data;
-    } catch (error) {
-      // У разі помилки, відхилення дії із зазначенням помилки
-      return thunkAPI.rejectWithValue(error.message);
+    } catch (e) {
+      return thunkAPI.rejectWithValue(e.message);
     }
   }
 );
 
-// Створення асинхронної Thunk-дії addContacts
-export const addContacts = createAsyncThunk(
-  'contacts/addContacts', // Унікальний рядок, що ідентифікує цю дію
-  async ({ name, number }, thunkAPI) => {
+//Previous version of addContact assync function without validation of existing contact in contacts
+// export const addContact = createAsyncThunk(
+//   'contacts/addContact',
+//   async ({ name, phone }, thunkAPI) => {
+//     try {
+//       const response = await axios.post('/contacts', { name, phone });
+//       return response.data;
+//     } catch (e) {
+//       return thunkAPI.rejectWithValue(e.message);
+//     }
+//   }
+// );
+
+export const addContact = createAsyncThunk(
+  'contacts/add',
+  async (contact, thunkAPI) => {
     try {
-      // Надсилання POST-запиту на '/contacts' з даними { name, number }
-      const response = await axios.post('/contacts', { name, number });
-      // Повернення отриманих даних
+      //pobranie obecnych kontaktów poprzez get:
+      const {
+        contacts: { contacts },
+      } = thunkAPI.getState();
+      //sprawdzenie czy jest kontakt na liście
+      if (contacts.find(item => item.name === contact.name)) {
+        //jakiś alert dla użytkownika i reject
+        Notiflix.Notify.failure(
+          `Contact with name '${contact.name}' is already in contacts.`
+        );
+        return thunkAPI.rejectWithValue('Contact already exist');
+      }
+      //jeśli przechodzi bo nie ma takiego kontaktu to dodajemy postem nowy kontakt
+      const response = await axios.post('/contacts', contact);
+      Notiflix.Notify.success(
+        `Contact with name '${contact.name}' has been added succesfully to contacts list.`
+      );
       return response.data;
-    } catch (error) {
-      // У разі помилки, відхилення дії із зазначенням помилки
-      return thunkAPI.rejectWithValue(error.message);
+    } catch (e) {
+      return thunkAPI.rejectWithValue(e.message);
     }
   }
 );
 
-// Создание асинхронного Thunk-действия deleteContacts
-export const deleteContacts = createAsyncThunk(
-  'contacts/deleteContacts', // Унікальний рядок, що ідентифікує цю дію
+export const deleteContact = createAsyncThunk(
+  'contacts/deleteContact',
   async (contactId, thunkAPI) => {
     try {
-      // Надсилання DELETE-запиту на `/contacts/${contactId}`
       const response = await axios.delete(`/contacts/${contactId}`);
-      // Повернення отриманих даних
       return response.data;
-    } catch (error) {
-      // У разі помилки, відхилення дії із зазначенням помилки
-      return thunkAPI.rejectWithValue(error.message);
+    } catch (e) {
+      return thunkAPI.rejectWithValue(e.message);
     }
   }
 );

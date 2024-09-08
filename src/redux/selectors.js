@@ -1,24 +1,18 @@
-import { createSelector } from '@reduxjs/toolkit';
+export const selectContacts = state => state.contacts.contacts;
 
-// Функція selectIsLoading приймає об'єкт стану state і повертає значення властивості isLoading з об'єкта стану contacts.
 export const selectIsLoading = state => state.contacts.isLoading;
 
-// Функція selectError приймає об'єкт стану state і повертає значення якості error з об'єкта стану contacts.
 export const selectError = state => state.contacts.error;
 
-// Функція selectContacts приймає об'єкт стану state і повертає значення властивості items з об'єкта стану contacts.
-export const selectContacts = state => state.contacts.items;
+export const selectContactsFilter = state => state.filter.filterQuery;
 
-// Функція selectFilter приймає об'єкт стану state та повертає значення властивості filter з об'єкта стану.
-export const selectFilter = state => state.filter;
+export const selectFilteredContacts = state => {
+  const contacts = selectContacts(state);
+  const filterQuery = selectContactsFilter(state);
 
-// Функція selectVisibleContacts використовує функцію createSelector для створення селектора, який залежить від двох інших селекторів: selectContacts і selectFilter.
-// Селектор selectVisibleContacts повертає відфільтрований масив контактів, де ім'я контакту contact.name містить рядок фільтра filter.
-export const selectVisibleContacts = createSelector(
-  [selectContacts, selectFilter],
-  (contacts, filter) => {
-    return contacts.filter(contact =>
-      contact.name.toLowerCase().includes(filter.toLowerCase())
-    );
-  }
-);
+  return contacts.filter(
+    contact =>
+      filterQuery === '' ||
+      contact.name.toLowerCase().includes(filterQuery.toLowerCase())
+  );
+};

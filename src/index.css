@@ -1,7 +1,13 @@
 @import-normalize; /* bring in normalize.css styles */
 
 body {
-  background: url('/src/assets/wallpaper.jpg') center / cover no-repeat;
-  background-attachment: fixed;
-  min-height: 100vh;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
 }
